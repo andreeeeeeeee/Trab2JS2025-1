@@ -1,4 +1,5 @@
 function generateGalleryHtml() {
+  // Seleciona os itens da galeria e os valores de estilo configurados pelo usuário
   const galleryItems = document.querySelectorAll('#gallery-items-container .gallery-item');
   const galleryBg = document.getElementById('gallery-bg').value;
   const cardBg = document.getElementById('card-bg').value;
@@ -7,12 +8,14 @@ function generateGalleryHtml() {
   const cardWidth = document.getElementById('card-width').value || '200px';
   const cardTextColor = document.getElementById('card-text-color').value;
 
+  // Mapeia os itens da galeria para gerar o HTML de cada card
   const cardsHtml = Array.from(galleryItems).map((item, i) => {
     const imgElement = item.querySelector('.card-preview-image');
     const imgSrc = imgElement && imgElement.src ? imgElement.src : '';
     const title = item.querySelector('.card-title-input').value || `Título ${i + 1}`;
     const description = item.querySelector('.card-description-input').value || `Descrição ${i + 1}`;
 
+    // Retorna o HTML de cada card com os estilos configurados
     return `
       <div class="card" style="
         background-color: ${cardBg};
@@ -28,6 +31,7 @@ function generateGalleryHtml() {
     `;
   }).join('');
 
+  // Retorna o HTML completo da galeria
   return `
     <div class="gallery" style="display: flex; flex-wrap: wrap; gap: ${cardSpacing}; background-color: ${galleryBg};">
       ${cardsHtml}
@@ -40,15 +44,18 @@ function generateFormHtml() {
   const formBg = document.getElementById('form-bg').value;
   const formBorder = document.getElementById('form-border').value || '0px';
 
+  // Mapeia os itens do formulário para gerar os campos
   const formItems = Array.from(document.querySelectorAll('#form-items-container .form-item')).map((item, i) => {
     const label = item.querySelector('.form-label-input').value || `Campo ${i + 1}`;
     const type = item.querySelector('.form-type-select').value;
 
+    // Retorna o HTML de cada campo, considerando o tipo (input ou select)
     return type === 'select'
       ? `<label>${label}: <select><option>Opção 1</option><option>Opção 2</option></select></label>`
       : `<label>${label}: <input type="${type}"></label>`;
   }).join('');
 
+  // Retorna o HTML completo do formulário
   return `
     <form style="background-color: ${formBg}; border: ${formBorder};">
       ${formTitle && `<h2>${formTitle}</h2>`}
@@ -64,6 +71,7 @@ function generateFooterHtml() {
   const footerFontSize = document.getElementById('footer-font-size').value || '12px';
   const footerTextAlign = document.getElementById('footer-text-align').value;
 
+  // Retorna o HTML do rodapé com os estilos configurados
   const footerHtml = `
     <footer style="
       background-color: ${footerBg};
@@ -78,60 +86,8 @@ function generateFooterHtml() {
   return footerHtml;
 }
 
-document.getElementById('generate-html').addEventListener('click', () => {
-  const headerText = document.getElementById('header-text').value;
-  const headerBg = document.getElementById('header-bg').value;
-  const headerTextColor = document.getElementById('header-text-color').value;
-  const headerBorder = document.getElementById('header-border').value || '0px';
-  const headerSpacing = document.getElementById('header-spacing').value || 0;
-  const headerImageInput = document.getElementById('header-image');
-  let headerImageSrc = '';
-
-  if (headerImageInput.files && headerImageInput.files[0]) {
-    const reader = new FileReader();
-    reader.onload = function (e) {
-      headerImageSrc = e.target.result;
-
-      const headerHtml = `
-        <header style="
-          background-color: ${headerBg};
-          color: ${headerTextColor};
-          border: ${headerBorder};
-          padding: ${headerSpacing};
-          display: flex;
-          align-items: center;
-          justify-content: space-between;
-        ">
-          ${headerText && `<div><h1>${headerText}</h1></div>`}
-          <div>
-            <img src="${headerImageSrc}" alt="Imagem do Cabeçalho" style="max-height: 100px;">
-          </div>
-        </header>
-      `;
-
-      generatePage(headerHtml);
-    };
-    reader.readAsDataURL(headerImageInput.files[0]);
-  } else {
-    const headerHtml = `
-      <header style="
-        background-color: ${headerBg};
-        color: ${headerTextColor};
-        border: ${headerBorder};
-        padding: ${headerSpacing};
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-      ">
-        ${headerText && `<div><h1>${headerText}</h1></div>`}
-      </header>
-    `;
-
-    generatePage(headerHtml);
-  }
-});
-
 function generatePage(headerHtml) {
+  // Configurações do menu
   const menuItems = document.getElementById('menu-items').value.split(',');
   const menuBg = document.getElementById('menu-bg').value;
   const menuTextColor = document.getElementById('menu-text-color').value;
@@ -140,11 +96,13 @@ function generatePage(headerHtml) {
   const menuImageInput = document.getElementById('menu-image');
   let menuImageSrc = '';
 
+  // Verifica se há uma imagem para o menu
   if (menuImageInput.files && menuImageInput.files[0]) {
     const reader = new FileReader();
     reader.onload = function (e) {
       menuImageSrc = e.target.result;
 
+      // Gera o HTML do menu com a imagem
       const menuHtml = `
         <nav style="
           background-color: ${menuBg};
@@ -163,6 +121,7 @@ function generatePage(headerHtml) {
     };
     reader.readAsDataURL(menuImageInput.files[0]);
   } else {
+    // Gera o HTML do menu sem imagem
     const menuHtml = `
       <nav style="
         background-color: ${menuBg};
@@ -185,6 +144,7 @@ function generateFullPage(headerHtml, menuHtml) {
   const formHtml = generateFormHtml();
   const footerHtml = generateFooterHtml();
 
+  // Monta o HTML final da página
   const html = `
     <!DOCTYPE html>
     <html lang="pt-br">
@@ -203,14 +163,73 @@ function generateFullPage(headerHtml, menuHtml) {
     </html>
   `;
 
+  // Exibe o HTML gerado no preview e no campo de código gerado
   document.getElementById('preview').innerHTML = html;
   document.getElementById('generated-code').textContent = html;
 }
+
+// Evento para gerar o cabeçalho e iniciar a geração da página
+document.getElementById('generate-html').addEventListener('click', () => {
+  const headerText = document.getElementById('header-text').value;
+  const headerBg = document.getElementById('header-bg').value;
+  const headerTextColor = document.getElementById('header-text-color').value;
+  const headerBorder = document.getElementById('header-border').value || '0px';
+  const headerSpacing = document.getElementById('header-spacing').value || 0;
+  const headerImageInput = document.getElementById('header-image');
+  let headerImageSrc = '';
+
+  // Verifica se há uma imagem para o cabeçalho
+  if (headerImageInput.files && headerImageInput.files[0]) {
+    const reader = new FileReader();
+    reader.onload = function (e) {
+      headerImageSrc = e.target.result;
+
+      // Gera o HTML do cabeçalho com a imagem
+      const headerHtml = `
+        <header style="
+          background-color: ${headerBg};
+          color: ${headerTextColor};
+          border: ${headerBorder};
+          padding: ${headerSpacing};
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+        ">
+          ${headerText && `<div><h1>${headerText}</h1></div>`}
+          <div>
+            <img src="${headerImageSrc}" alt="Imagem do Cabeçalho" style="max-height: 100px;">
+          </div>
+        </header>
+      `;
+
+      generatePage(headerHtml);
+    };
+    reader.readAsDataURL(headerImageInput.files[0]);
+  } else {
+    // Gera o HTML do cabeçalho sem imagem
+    const headerHtml = `
+      <header style="
+        background-color: ${headerBg};
+        color: ${headerTextColor};
+        border: ${headerBorder};
+        padding: ${headerSpacing};
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      ">
+        ${headerText && `<div><h1>${headerText}</h1></div>`}
+      </header>
+    `;
+
+    generatePage(headerHtml);
+  }
+});
 
 document.getElementById('add-gallery-item').addEventListener('click', () => {
   const container = document.getElementById('gallery-items-container');
   const index = container.children.length + 1;
 
+  // HTML do novo item da galeria
   const cardHtml = `
     <div class="gallery-item mb-3">
       <label>Imagem do Card ${index}:</label>
@@ -225,7 +244,7 @@ document.getElementById('add-gallery-item').addEventListener('click', () => {
   `;
   container.insertAdjacentHTML('beforeend', cardHtml);
 
-  // Adicionar evento para pré-visualizar a imagem
+  // Adiciona evento para pré-visualizar a imagem carregada
   const newCard = container.querySelector('.gallery-item:last-child');
   const fileInput = newCard.querySelector('.card-image-input');
   const previewImage = newCard.querySelector('.card-preview-image');
@@ -245,9 +264,9 @@ document.getElementById('add-gallery-item').addEventListener('click', () => {
     }
   });
 
-  // Adicionar evento para remover o card
+  // Adiciona evento para remover o item da galeria
   newCard.querySelector('.remove-gallery-item').addEventListener('click', (e) => {
-    e.target.closest('.gallery-item').remove();
+    e.target.closest('.gallery-item').remove(); // Remove o item correspondente
   });
 });
 
@@ -280,6 +299,7 @@ document.getElementById('add-form-item').addEventListener('click', () => {
     container.removeChild(formItem);
   });
 
+  // Adiciona os elementos criados ao item do formulário
   formItem.appendChild(labelInput);
   formItem.appendChild(typeSelect);
   formItem.appendChild(deleteButton);
