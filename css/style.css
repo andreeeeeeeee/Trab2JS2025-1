@@ -1,0 +1,40 @@
+#preview {
+  border: 1px solid #ccc;
+  padding: 10px;
+  background-color: #f9f9f9;
+  min-height: 500px;
+}
+
+header img {
+  max-width: 100%;
+  height: auto;
+}
+
+nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px;
+}
+nav img {
+  max-height: 50px;
+  margin-right: 10px;
+}
+nav ul {
+  list-style: none;
+  display: flex;
+  gap: 10px;
+  margin: 0;
+  padding: 0;
+}
+nav ul li {
+  padding: 5px 10px;
+  cursor: pointer;
+}
+
+footer {
+  padding: 10px;
+}
+footer p {
+  margin: 0;
+}
