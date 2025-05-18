@@ -1,3 +1,40 @@
+function generateGalleryHtml() {
+  const galleryItems = document.querySelectorAll('#gallery-items-container .gallery-item');
+  const galleryBg = document.getElementById('gallery-bg').value;
+  const cardBg = document.getElementById('card-bg').value;
+  const cardBorder = document.getElementById('card-border').value || '1px solid #000';
+  const cardSpacing = document.getElementById('card-spacing').value || '10px';
+  const cardWidth = document.getElementById('card-width').value || '200px';
+  const cardTextColor = document.getElementById('card-text-color').value;
+
+  const cardsHtml = Array.from(galleryItems).map((item, i) => {
+    const imgElement = item.querySelector('.card-preview-image');
+    const imgSrc = imgElement && imgElement.src ? imgElement.src : '';
+    const title = item.querySelector('.card-title-input').value || `Título ${i + 1}`;
+    const description = item.querySelector('.card-description-input').value || `Descrição ${i + 1}`;
+
+    return `
+      <div class="card" style="
+        background-color: ${cardBg};
+        border: ${cardBorder};
+        margin: ${cardSpacing};
+        width: ${cardWidth};
+        color: ${cardTextColor};
+      ">
+        ${imgSrc ? `<img src="${imgSrc}" alt="Imagem ${i + 1}" style="width: 100%;">` : ''}
+        <h5>${title}</h5>
+        <p>${description}</p>
+      </div>
+    `;
+  }).join('');
+
+  return `
+    <div class="gallery" style="display: flex; flex-wrap: wrap; gap: ${cardSpacing}; background-color: ${galleryBg};">
+      ${cardsHtml}
+    </div>
+  `;
+}
+
 function generateFormHtml() {
   const formTitle = document.getElementById('form-title').value;
   const formBg = document.getElementById('form-bg').value;
@@ -144,11 +181,7 @@ function generatePage(headerHtml) {
 }
 
 function generateFullPage(headerHtml, menuHtml) {
-  const galleryItems = parseInt(document.getElementById('gallery-items').value, 10);
-  let galleryHtml = '<div class="gallery">';
-  for (let i = 0; i < galleryItems; i++)
-    galleryHtml += `<div class="card">Card ${i + 1}</div>`;
-  galleryHtml += '</div>';
+  const galleryHtml = generateGalleryHtml();
   const formHtml = generateFormHtml();
   const footerHtml = generateFooterHtml();
 
@@ -173,6 +206,50 @@ function generateFullPage(headerHtml, menuHtml) {
   document.getElementById('preview').innerHTML = html;
   document.getElementById('generated-code').textContent = html;
 }
+
+document.getElementById('add-gallery-item').addEventListener('click', () => {
+  const container = document.getElementById('gallery-items-container');
+  const index = container.children.length + 1;
+
+  const cardHtml = `
+    <div class="gallery-item mb-3">
+      <label>Imagem do Card ${index}:</label>
+      <input type="file" class="form-control card-image-input" accept="image/*">
+      <img class="card-preview-image mt-2" style="max-width: 100%; display: none;">
+      <label>Título do Card ${index}:</label>
+      <input type="text" class="form-control card-title-input" placeholder="Título">
+      <label>Descrição do Card ${index}:</label>
+      <textarea class="form-control card-description-input" placeholder="Descrição"></textarea>
+      <button type="button" class="btn btn-danger btn-sm remove-gallery-item mt-2">Remover</button>
+    </div>
+  `;
+  container.insertAdjacentHTML('beforeend', cardHtml);
+
+  // Adicionar evento para pré-visualizar a imagem
+  const newCard = container.querySelector('.gallery-item:last-child');
+  const fileInput = newCard.querySelector('.card-image-input');
+  const previewImage = newCard.querySelector('.card-preview-image');
+
+  fileInput.addEventListener('change', (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        previewImage.src = event.target.result;
+        previewImage.style.display = 'block';
+      };
+      reader.readAsDataURL(file);
+    } else {
+      previewImage.style.display = 'none';
+      previewImage.src = '';
+    }
+  });
+
+  // Adicionar evento para remover o card
+  newCard.querySelector('.remove-gallery-item').addEventListener('click', (e) => {
+    e.target.closest('.gallery-item').remove();
+  });
+});
 
 document.getElementById('add-form-item').addEventListener('click', () => {
   const container = document.getElementById('form-items-container');
