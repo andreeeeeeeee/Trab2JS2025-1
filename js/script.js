@@ -1,9 +1,52 @@
+function generateFormHtml() {
+  const formTitle = document.getElementById('form-title').value;
+  const formBg = document.getElementById('form-bg').value;
+  const formBorder = document.getElementById('form-border').value || '0px';
+
+  const formItems = Array.from(document.querySelectorAll('#form-items-container .form-item')).map((item, i) => {
+    const label = item.querySelector('.form-label-input').value || `Campo ${i + 1}`;
+    const type = item.querySelector('.form-type-select').value;
+
+    return type === 'select'
+      ? `<label>${label}: <select><option>Opção 1</option><option>Opção 2</option></select></label>`
+      : `<label>${label}: <input type="${type}"></label>`;
+  }).join('');
+
+  return `
+    <form style="background-color: ${formBg}; border: ${formBorder};">
+      ${formTitle && `<h2>${formTitle}</h2>`}
+      ${formItems}
+    </form>
+  `;
+}
+
+function generateFooterHtml() {
+  const footerText = document.getElementById('footer-text').value;
+  const footerBg = document.getElementById('footer-bg').value;
+  const footerTextColor = document.getElementById('footer-text-color').value;
+  const footerFontSize = document.getElementById('footer-font-size').value || '12px';
+  const footerTextAlign = document.getElementById('footer-text-align').value;
+
+  const footerHtml = `
+    <footer style="
+      background-color: ${footerBg};
+      color: ${footerTextColor};
+      font-size: ${footerFontSize};
+      text-align: ${footerTextAlign};
+      padding: 10px;
+    ">
+      <p>${footerText}</p>
+    </footer>
+  `;
+  return footerHtml;
+}
+
 document.getElementById('generate-html').addEventListener('click', () => {
   const headerText = document.getElementById('header-text').value;
   const headerBg = document.getElementById('header-bg').value;
   const headerTextColor = document.getElementById('header-text-color').value;
-  const headerBorder = document.getElementById('header-border').value;
-  const headerSpacing = document.getElementById('header-spacing').value;
+  const headerBorder = document.getElementById('header-border').value || '0px';
+  const headerSpacing = document.getElementById('header-spacing').value || 0;
   const headerImageInput = document.getElementById('header-image');
   let headerImageSrc = '';
 
@@ -22,9 +65,7 @@ document.getElementById('generate-html').addEventListener('click', () => {
           align-items: center;
           justify-content: space-between;
         ">
-          <div>
-            <h1>${headerText}</h1>
-          </div>
+          ${headerText && `<div><h1>${headerText}</h1></div>`}
           <div>
             <img src="${headerImageSrc}" alt="Imagem do Cabeçalho" style="max-height: 100px;">
           </div>
@@ -45,9 +86,7 @@ document.getElementById('generate-html').addEventListener('click', () => {
         align-items: center;
         justify-content: space-between;
       ">
-        <div>
-          <h1>${headerText}</h1>
-        </div>
+        ${headerText && `<div><h1>${headerText}</h1></div>`}
       </header>
     `;
 
@@ -59,8 +98,8 @@ function generatePage(headerHtml) {
   const menuItems = document.getElementById('menu-items').value.split(',');
   const menuBg = document.getElementById('menu-bg').value;
   const menuTextColor = document.getElementById('menu-text-color').value;
-  const menuBorder = document.getElementById('menu-border').value;
-  const menuSpacing = document.getElementById('menu-spacing').value;
+  const menuBorder = document.getElementById('menu-border').value || '0px';
+  const menuSpacing = document.getElementById('menu-spacing').value || '0px';
   const menuImageInput = document.getElementById('menu-image');
   let menuImageSrc = '';
 
@@ -106,31 +145,12 @@ function generatePage(headerHtml) {
 
 function generateFullPage(headerHtml, menuHtml) {
   const galleryItems = parseInt(document.getElementById('gallery-items').value, 10);
-  const formTitle = document.getElementById('form-title').value;
-
-  const footerText = document.getElementById('footer-text').value;
-  const footerBg = document.getElementById('footer-bg').value;
-  const footerTextColor = document.getElementById('footer-text-color').value;
-  const footerFontSize = document.getElementById('footer-font-size').value;
-  const footerTextAlign = document.getElementById('footer-text-align').value;
-
-  const footerHtml = `
-    <footer style="
-      background-color: ${footerBg};
-      color: ${footerTextColor};
-      font-size: ${footerFontSize};
-      text-align: ${footerTextAlign};
-      padding: 10px;
-    ">
-      <p>${footerText}</p>
-    </footer>
-  `;
-
   let galleryHtml = '<div class="gallery">';
-  for (let i = 0; i < galleryItems; i++) {
+  for (let i = 0; i < galleryItems; i++)
     galleryHtml += `<div class="card">Card ${i + 1}</div>`;
-  }
   galleryHtml += '</div>';
+  const formHtml = generateFormHtml();
+  const footerHtml = generateFooterHtml();
 
   const html = `
     <!DOCTYPE html>
@@ -144,9 +164,7 @@ function generateFullPage(headerHtml, menuHtml) {
       ${headerHtml}
       ${menuHtml}
       ${galleryHtml}
-      <form>
-        <h2>${formTitle}</h2>
-      </form>
+      ${formHtml}
       ${footerHtml}
     </body>
     </html>
@@ -155,6 +173,42 @@ function generateFullPage(headerHtml, menuHtml) {
   document.getElementById('preview').innerHTML = html;
   document.getElementById('generated-code').textContent = html;
 }
+
+document.getElementById('add-form-item').addEventListener('click', () => {
+  const container = document.getElementById('form-items-container');
+
+  const formItem = document.createElement('div');
+  formItem.classList.add('form-item', 'mb-3', 'border', 'p-2', 'rounded');
+
+  const labelInput = document.createElement('input');
+  labelInput.type = 'text';
+  labelInput.placeholder = 'Texto do Label';
+  labelInput.classList.add('form-label-input', 'form-control', 'mb-2');
+
+  const typeSelect = document.createElement('select');
+  typeSelect.classList.add('form-type-select', 'form-control', 'mb-2');
+  ['text', 'number', 'password', 'tel', 'email', 'select', 'date'].forEach(type => {
+    const option = document.createElement('option');
+    option.value = type;
+    option.textContent = type;
+    typeSelect.appendChild(option);
+  });
+
+  const deleteButton = document.createElement('button');
+  deleteButton.type = 'button';
+  deleteButton.textContent = 'Excluir';
+  deleteButton.classList.add('btn', 'btn-danger', 'btn-sm');
+
+  deleteButton.addEventListener('click', () => {
+    container.removeChild(formItem);
+  });
+
+  formItem.appendChild(labelInput);
+  formItem.appendChild(typeSelect);
+  formItem.appendChild(deleteButton);
+
+  container.appendChild(formItem);
+});
 
 document.getElementById('save-code').addEventListener('click', () => {
   const code = document.getElementById('generated-code').textContent;

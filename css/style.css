@@ -32,6 +32,22 @@ nav ul li {
   cursor: pointer;
 }
 
+form {
+  padding: 10px;
+  margin-top: 20px;
+}
+form label {
+  display: block;
+  margin-bottom: 5px;
+}
+form input,
+form select,
+form textarea {
+  margin-bottom: 15px;
+  padding: 5px;
+  width: 100%;
+}
+
 footer {
   padding: 10px;
 }
