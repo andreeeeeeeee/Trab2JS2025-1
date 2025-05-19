@@ -327,3 +327,14 @@ document.getElementById('clear-storage').addEventListener('click', () => {
   localStorage.clear();
   alert('LocalStorage limpo!');
 });
+
+document.getElementById('copy-code').addEventListener('click', function () {
+  const codeElement = document.getElementById('generated-code');
+  const code = codeElement.textContent;
+
+  navigator.clipboard.writeText(code).then(function () {
+    alert('Código copiado para a área de transferência!');
+  }).catch(function (err) {
+    console.error('Erro ao copiar o código: ', err);
+  });
+});

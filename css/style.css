@@ -1,9 +1,7 @@
 button {
   width: 100%;
 }
-#save-code,
-#load-code,
-#clear-storage {
+#generated>button {
   width: 250px;
 }
 
